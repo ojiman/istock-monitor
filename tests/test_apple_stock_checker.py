@@ -40,10 +40,14 @@ NO_STOCK_RESPONSE = {
 }
 
 @patch('src.apple_stock_checker.requests.Session.get')
-def test_check_stock_success(mock_get):
+def test_check_stock_success(mock_get, monkeypatch):
     """
     Tests a successful stock check where products are available.
     """
+    # Set environment variables for the test
+    monkeypatch.setenv("API_BASE_URL", "https://fake.apple.com")
+    monkeypatch.setenv("USER_AGENT", "Test Agent")
+
     # Configure the mock to return a successful response with JSON data
     mock_response = MagicMock()
     mock_response.raise_for_status.return_value = None
@@ -66,10 +70,13 @@ def test_check_stock_success(mock_get):
     assert mock_get.call_count == len(models_to_check)
 
 @patch('src.apple_stock_checker.requests.Session.get')
-def test_check_stock_no_stock(mock_get):
+def test_check_stock_no_stock(mock_get, monkeypatch):
     """
     Tests a successful API call where no stock is available for the model.
     """
+    monkeypatch.setenv("API_BASE_URL", "https://fake.apple.com")
+    monkeypatch.setenv("USER_AGENT", "Test Agent")
+
     mock_response = MagicMock()
     mock_response.raise_for_status.return_value = None
     mock_response.json.return_value = NO_STOCK_RESPONSE
@@ -82,10 +89,13 @@ def test_check_stock_no_stock(mock_get):
     assert mock_get.call_count == 1
 
 @patch('src.apple_stock_checker.requests.Session.get')
-def test_check_stock_network_error(mock_get):
+def test_check_stock_network_error(mock_get, monkeypatch):
     """
     Tests the function's behavior during a network error.
     """
+    monkeypatch.setenv("API_BASE_URL", "https://fake.apple.com")
+    monkeypatch.setenv("USER_AGENT", "Test Agent")
+
     # Configure the mock to raise a RequestException
     mock_get.side_effect = requests.exceptions.RequestException("Network Error")
 
@@ -97,10 +107,13 @@ def test_check_stock_network_error(mock_get):
     assert mock_get.call_count == 1
 
 @patch('src.apple_stock_checker.requests.Session.get')
-def test_check_stock_bad_json(mock_get):
+def test_check_stock_bad_json(mock_get, monkeypatch):
     """
     Tests the function's behavior when the API returns non-JSON content.
     """
+    monkeypatch.setenv("API_BASE_URL", "https://fake.apple.com")
+    monkeypatch.setenv("USER_AGENT", "Test Agent")
+
     mock_response = MagicMock()
     mock_response.raise_for_status.return_value = None
     # Configure the mock to raise a JSONDecodeError when .json() is called

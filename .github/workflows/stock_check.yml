@@ -36,6 +36,8 @@ jobs:
           PRODUCT_MODELS: ${{ secrets.PRODUCT_MODELS }}
           LOCATION: ${{ secrets.LOCATION }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          API_BASE_URL: ${{ secrets.API_BASE_URL }}
+          USER_AGENT: ${{ secrets.USER_AGENT }}
         run: python -m src.main
 
       # Step 5: Commit and push the updated state.json if it has changed

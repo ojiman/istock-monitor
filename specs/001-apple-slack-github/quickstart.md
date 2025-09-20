@@ -42,6 +42,12 @@ export LOCATION="141-0032"
 
 # Your Slack incoming webhook URL
 export SLACK_WEBHOOK_URL="https://hooks.slack.com/services/YOUR/SLACK/URL"
+
+# The base URL for the Apple API
+export API_BASE_URL="YOUR_API_BASE_URL"
+
+# The User-Agent string for requests
+export USER_AGENT="YOUR_USER_AGENT"
 ```
 
 **Note**: Remember to replace the placeholder values with your actual configuration. The `.env` file should be added to your global `.gitignore` or the repository's `.gitignore` to prevent committing secrets.

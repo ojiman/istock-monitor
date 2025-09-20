@@ -27,6 +27,20 @@ Configuration is managed via environment variables. In a GitHub Actions context,
 -   **Required**: Yes
 -   **Example**: `"https://hooks.slack.com/services/T00000000/B00000000/XXXXXXXXXXXXXXXXXXXXXXXX"`
 
+### `API_BASE_URL`
+
+-   **Type**: `String` (URL)
+-   **Description**: The base URL for the Apple pickup recommendations API.
+-   **Required**: Yes
+-   **Example**: `"https://www.apple.com/jp/shop/pickup-message-recommendations?mts.0=regular&cppart=UNLOCKED_JP"`
+
+### `USER_AGENT`
+
+-   **Type**: `String`
+-   **Description**: The User-Agent string to be sent with API requests to mimic a real browser.
+-   **Required**: Yes
+-   **Example**: `"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"`
+
 ---
 
 ## 2. State Data (`state.json`)
