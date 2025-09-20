@@ -47,7 +47,11 @@
 ## Constitution Check
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+- **Reliability**: Does the plan account for potential errors and ensure stable operation?
+- **Efficiency**: Is the proposed solution lightweight and resource-efficient?
+- **Clarity**: Is the output (e.g., notifications, logs) clear and easily understandable?
+- **Maintainability**: Can variables like product models and store info be updated easily?
+- **Simplicity**: Does the plan avoid unnecessary complexity and stick to the core function?
 
 ## Project Structure
 
