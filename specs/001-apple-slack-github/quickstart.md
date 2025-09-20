@@ -54,10 +54,10 @@ Before running the script, load the environment variables from your `.env` file:
 source .env
 ```
 
-Now, you can execute the main script:
+Now, you can execute the main script as a module from the project root:
 
 ```bash
-python src/main.py
+python -m src.main
 ```
 
 The script will perform a stock check, and if there are any changes compared to the `state.json` file, it will print the changes and attempt to send a Slack notification.
