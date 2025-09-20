@@ -1,0 +1,54 @@
+name: Check Apple Stock
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+  
+  # Runs on a 5-minute schedule
+  schedule:
+    - cron: '*/5 * * * *'
+
+jobs:
+  check-stock:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the repository so the job can access it
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      # Step 2: Set up Python 3.13
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      # Step 3: Install dependencies from requirements.txt
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Step 4: Run the main stock checker script
+      - name: Run stock checker
+        env:
+          # Pass secrets to the script as environment variables
+          PRODUCT_MODELS: ${{ secrets.PRODUCT_MODELS }}
+          LOCATION: ${{ secrets.LOCATION }}
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: python src/main.py
+
+      # Step 5: Commit and push the updated state.json if it has changed
+      - name: Commit and push if state changed
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          # Check if there are any changes to state.json
+          if ! git diff --quiet state.json; then
+            git add state.json
+            git commit -m "Update stock state"
+            git push
+            echo "state.json was updated and pushed to the repository."
+          else
+            echo "No changes to state.json. Nothing to commit."
+          fi

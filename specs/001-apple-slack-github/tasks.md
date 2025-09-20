@@ -18,7 +18,7 @@
 - [X] T011 [P] In `tests/test_slack_notifier.py`, write unit tests for `send_notification`, mocking the `slack_sdk.WebhookClient`.
 
 ## Phase 3.3: Integration
-- [ ] T012 In `src/main.py`, implement the main orchestration logic:
+- [X] T012 In `src/main.py`, implement the main orchestration logic:
     1. Load configuration from environment variables.
     2. Call `state_manager.read_state()` to get the old state.
     3. Call `apple_stock_checker.check_stock()` to get the new state.
@@ -27,7 +27,7 @@
     6. If changes are found, format a message and call `slack_notifier.send_notification()`.
 
 ## Phase 3.4: Automation
-- [ ] T013 In `.github/workflows/stock_check.yml`, create a GitHub Actions workflow that:
+- [X] T013 In `.github/workflows/stock_check.yml`, create a GitHub Actions workflow that:
     1. Runs on a 5-minute schedule (`cron: '*/5 * * * *'`).
     2. Sets up Python 3.13.
     3. Installs dependencies from `requirements.txt`.
@@ -36,8 +36,8 @@
 
 ## Phase 3.5: Documentation
 - [X] T014 [P] Create `specs/001-apple-slack-github/research.md` and document the findings about the Apple API endpoint, request, and response format.
-- [ ] T015 [P] Create `specs/001-apple-slack-github/data-model.md` to document the structure of the environment variables and the `state.json` file.
-- [ ] T016 [P] Create `specs/001-apple-slack-github/quickstart.md` with instructions for local setup, configuration, and execution.
+- [X] T015 [P] Create `specs/001-apple-slack-github/data-model.md` to document the structure of the environment variables and the `state.json` file.
+- [X] T016 [P] Create `specs/001-apple-slack-github/quickstart.md` with instructions for local setup, configuration, and execution.
 
 ## Dependencies
 - `T001`-`T005` (Setup) must be done before `T006`-`T011` (Core Implementation).
