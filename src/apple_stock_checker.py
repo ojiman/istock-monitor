@@ -36,6 +36,12 @@ def check_stock(models: list, location: str) -> dict:
                 response.raise_for_status()
                 data = response.json()
 
+                # --- Debug Log Start ---
+                print(f"--- Raw API Response for model {model} ---")
+                print(json.dumps(data, indent=2, ensure_ascii=False))
+                print("--- End of Raw API Response ---")
+                # --- Debug Log End ---
+
                 stores = data.get("body", {}).get("PickupMessage", {}).get("stores", [])
                 
                 available_stores_for_model = []
