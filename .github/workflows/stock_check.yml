@@ -11,6 +11,8 @@ on:
 jobs:
   check-stock:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
 
     steps:
       # Step 1: Check out the repository so the job can access it
