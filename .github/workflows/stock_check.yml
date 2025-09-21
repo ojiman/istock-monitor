@@ -32,12 +32,12 @@ jobs:
       # Step 4: Run the main stock checker script
       - name: Run stock checker
         env:
-          # Pass secrets to the script as environment variables
-          PRODUCT_MODELS: ${{ secrets.PRODUCT_MODELS }}
-          LOCATION: ${{ secrets.LOCATION }}
+          # Pass non-sensitive config from vars and sensitive data from secrets
+          PRODUCT_MODELS: ${{ vars.PRODUCT_MODELS }}
+          LOCATION: ${{ vars.LOCATION }}
+          API_BASE_URL: ${{ vars.API_BASE_URL }}
+          USER_AGENT: ${{ vars.USER_AGENT }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          API_BASE_URL: ${{ secrets.API_BASE_URL }}
-          USER_AGENT: ${{ secrets.USER_AGENT }}
         run: python -m src.main
 
       # Step 5: Commit and push the updated state.json if it has changed
