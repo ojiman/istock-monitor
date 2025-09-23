@@ -48,6 +48,9 @@ export API_BASE_URL="YOUR_API_BASE_URL"
 
 # The User-Agent string for requests
 export USER_AGENT="YOUR_USER_AGENT"
+
+# (Optional) Set the logging level to DEBUG for verbose output
+# export LOG_LEVEL="DEBUG"
 ```
 
 **Note**: Remember to replace the placeholder values with your actual configuration. The `.env` file should be added to your global `.gitignore` or the repository's `.gitignore` to prevent committing secrets.

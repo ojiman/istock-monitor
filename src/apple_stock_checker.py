@@ -1,6 +1,16 @@
 import os
 import json
+import logging
 import requests
+
+# Configure logging
+log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(
+    level=log_level,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+logger = logging.getLogger(__name__)
 
 def check_stock(models: list, location: str) -> dict:
     """
@@ -19,8 +29,7 @@ def check_stock(models: list, location: str) -> dict:
     user_agent = os.environ.get("USER_AGENT")
 
     if not base_url or not user_agent:
-        print("Error: API_BASE_URL and USER_AGENT environment variables must be set.")
-        # Return a structure indicating failure for all models
+        logger.error("API_BASE_URL and USER_AGENT environment variables must be set.")
         return {model: [] for model in models}
 
     current_stock = {model: [] for model in models}
@@ -36,10 +45,8 @@ def check_stock(models: list, location: str) -> dict:
                 response.raise_for_status()
                 data = response.json()
 
-                # --- Debug Log ---
-                print(f"--- Raw API Response for model {model} ---")
-                print(json.dumps(data, indent=2, ensure_ascii=False))
-                print("--- End of Raw API Response ---")
+                logger.debug("--- Raw API Response for model %s ---", model)
+                logger.debug(json.dumps(data, indent=2, ensure_ascii=False))
 
                 stores = data.get("body", {}).get("PickupMessage", {}).get("stores", [])
                 
@@ -49,17 +56,18 @@ def check_stock(models: list, location: str) -> dict:
                     parts_availability = store.get("partsAvailability", {})
                     
                     for part_number, details in parts_availability.items():
-                        if part_number == model and details.get("pickupDisplay") == "available":
+                        # If any part is available, we consider the model to be in stock.
+                        if details.get("pickupDisplay") == "available":
                             if store_name:
                                 available_stores_for_model.append(store_name)
                 
                 current_stock[model] = sorted(list(set(available_stores_for_model)))
 
             except requests.exceptions.RequestException as e:
-                print(f"Error checking stock for model {model}: Network issue. ({e})")
+                logger.warning("Error checking stock for model %s: Network issue. (%s)", model, e)
                 continue
             except json.JSONDecodeError:
-                print(f"Error checking stock for model {model}: Failed to decode JSON response.")
+                logger.warning("Error checking stock for model %s: Failed to decode JSON response.", model)
                 continue
 
     return current_stock

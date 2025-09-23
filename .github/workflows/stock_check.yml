@@ -40,6 +40,7 @@ jobs:
           API_BASE_URL: ${{ vars.API_BASE_URL }}
           USER_AGENT: ${{ vars.USER_AGENT }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          LOG_LEVEL: ${{ vars.LOG_LEVEL || 'INFO' }}
         run: python -m src.main
 
       # Step 5: Commit and push the updated state.json if it has changed

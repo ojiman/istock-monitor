@@ -1,19 +1,21 @@
 import os
 import sys
+import logging
 from src import state_manager, apple_stock_checker, slack_notifier
+
+# Configure logging
+log_level = os.environ.get("LOG_LEVEL", "INFO").upper()
+logging.basicConfig(
+    level=log_level,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+logger = logging.getLogger(__name__)
 
 def create_notification_message(old_state: dict, new_state: dict) -> str:
     """
     Compares the old and new stock states and creates a human-readable
     notification message for any changes.
-
-    Args:
-        old_state (dict): The previous stock state.
-        new_state (dict): The current stock state.
-
-    Returns:
-        str: A formatted string detailing the changes. Returns an empty
-             string if there are no changes.
     """
     messages = []
     all_models = set(old_state.keys()) | set(new_state.keys())
@@ -39,41 +41,35 @@ def main():
     """
     Main function to orchestrate the stock checking process.
     """
-    # 1. Load configuration from environment variables
     product_models_str = os.environ.get("PRODUCT_MODELS")
     location = os.environ.get("LOCATION")
 
     if not product_models_str or not location:
-        print("Error: PRODUCT_MODELS and LOCATION environment variables must be set.")
+        logger.critical("PRODUCT_MODELS and LOCATION environment variables must be set.")
         sys.exit(1)
     
     product_models = [model.strip() for model in product_models_str.split(',')]
 
-    # 2. Read the old state
     old_state = state_manager.read_state()
 
-    # 3. Check for the new stock state
-    print(f"Checking stock for models: {product_models} at location: {location}")
+    logger.info("Checking stock for models: %s at location: %s", product_models, location)
     new_state = apple_stock_checker.check_stock(product_models, location)
-    print(f"Current stock status: {new_state}")
+    logger.info("Current stock status: %s", new_state)
 
-    # 4. Write the new state immediately after a successful API call
     state_manager.write_state(new_state)
-    print("Successfully updated state file.")
+    logger.info("Successfully updated state file.")
 
-    # 5. Compare states and create a notification message
     message = create_notification_message(old_state, new_state)
 
-    # 6. If there are changes, send a notification
     if message:
-        print(f"Changes detected. Sending notification:\n{message}")
+        logger.info("Changes detected. Sending notification...\n%s", message)
         success = slack_notifier.send_notification(message)
         if success:
-            print("Slack notification sent successfully.")
+            logger.info("Slack notification sent successfully.")
         else:
-            print("Failed to send Slack notification.")
+            logger.error("Failed to send Slack notification.")
     else:
-        print("No stock changes detected.")
+        logger.info("No stock changes detected.")
 
 if __name__ == "__main__":
     main()

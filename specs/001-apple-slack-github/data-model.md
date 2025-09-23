@@ -39,7 +39,14 @@ Configuration is managed via environment variables. In a GitHub Actions context,
 -   **Type**: `String`
 -   **Description**: The User-Agent string to be sent with API requests to mimic a real browser.
 -   **Required**: Yes
--   **Example**: `"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"`
+-   **Example**: `"YOUR_USER_AGENT"`
+
+### `LOG_LEVEL`
+
+-   **Type**: `String`
+-   **Description**: Sets the logging level for the application. Can be `DEBUG`, `INFO`, `WARNING`, `ERROR`.
+-   **Required**: No (Defaults to `INFO`)
+-   **Example**: `"DEBUG"`
 
 ---
 

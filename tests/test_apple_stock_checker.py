@@ -18,8 +18,7 @@ SAMPLE_API_RESPONSE = {
         {
           "storeName": "新宿",
           "partsAvailability": {
-            "MG6A4J/A": {"pickupDisplay": "available"},
-            "MG6C4J/A": {"pickupDisplay": "unavailable"}
+            "MG6A4J/A": {"pickupDisplay": "available"}
           }
         }
       ]
@@ -44,15 +43,20 @@ def test_check_stock_success(mock_get, monkeypatch):
     """
     Tests a successful stock check where products are available.
     """
-    # Set environment variables for the test
     monkeypatch.setenv("API_BASE_URL", "https://fake.apple.com")
     monkeypatch.setenv("USER_AGENT", "Test Agent")
 
-    # Configure the mock to return a successful response with JSON data
-    mock_response = MagicMock()
-    mock_response.raise_for_status.return_value = None
-    mock_response.json.return_value = SAMPLE_API_RESPONSE
-    mock_get.return_value = mock_response
+    # Create separate mock responses for each API call
+    mock_response_stock = MagicMock()
+    mock_response_stock.raise_for_status.return_value = None
+    mock_response_stock.json.return_value = SAMPLE_API_RESPONSE
+
+    mock_response_no_stock = MagicMock()
+    mock_response_no_stock.raise_for_status.return_value = None
+    mock_response_no_stock.json.return_value = NO_STOCK_RESPONSE
+
+    # Use side_effect to return different responses for each call
+    mock_get.side_effect = [mock_response_stock, mock_response_no_stock]
 
     models_to_check = ["MG6A4J/A", "MG6C4J/A"]
     location = "123-4567"
@@ -62,11 +66,8 @@ def test_check_stock_success(mock_get, monkeypatch):
     # Assertions
     assert "MG6A4J/A" in result
     assert "MG6C4J/A" in result
-    # Should find MG6A4J/A in two stores, sorted alphabetically
     assert result["MG6A4J/A"] == ["新宿", "渋谷"]
-    # Should find MG6C4J/A is unavailable
     assert result["MG6C4J/A"] == []
-    # Verify the mock was called for each model
     assert mock_get.call_count == len(models_to_check)
 
 @patch('src.apple_stock_checker.requests.Session.get')
@@ -96,13 +97,11 @@ def test_check_stock_network_error(mock_get, monkeypatch):
     monkeypatch.setenv("API_BASE_URL", "https://fake.apple.com")
     monkeypatch.setenv("USER_AGENT", "Test Agent")
 
-    # Configure the mock to raise a RequestException
     mock_get.side_effect = requests.exceptions.RequestException("Network Error")
 
     models_to_check = ["MG6A4J/A"]
     result = check_stock(models_to_check, "123-4567")
 
-    # The function should handle the error and return a dict with an empty list
     assert result["MG6A4J/A"] == []
     assert mock_get.call_count == 1
 
@@ -116,13 +115,11 @@ def test_check_stock_bad_json(mock_get, monkeypatch):
 
     mock_response = MagicMock()
     mock_response.raise_for_status.return_value = None
-    # Configure the mock to raise a JSONDecodeError when .json() is called
     mock_response.json.side_effect = json.JSONDecodeError("msg", "doc", 0)
     mock_get.return_value = mock_response
 
     models_to_check = ["MG6A4J/A"]
     result = check_stock(models_to_check, "123-4567")
 
-    # The function should handle the error and return a dict with an empty list
     assert result["MG6A4J/A"] == []
     assert mock_get.call_count == 1
