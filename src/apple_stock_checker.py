@@ -15,15 +15,6 @@ logger = logging.getLogger(__name__)
 def check_stock(models: list, location: str) -> dict:
     """
     Checks in-store pickup availability for a list of product models.
-
-    Reads the API_BASE_URL and USER_AGENT from environment variables.
-
-    Args:
-        models (list): A list of product model strings to check.
-        location (str): The location (e.g., a postal code) to check against.
-
-    Returns:
-        dict: A dictionary of stock availability.
     """
     base_url = os.environ.get("API_BASE_URL")
     user_agent = os.environ.get("USER_AGENT")
@@ -55,11 +46,14 @@ def check_stock(models: list, location: str) -> dict:
                     store_name = store.get("storeName")
                     parts_availability = store.get("partsAvailability", {})
                     
-                    for part_number, details in parts_availability.items():
-                        # If any part is available, we consider the model to be in stock.
+                    # Loop through all parts in the response for a given store
+                    for details in parts_availability.values():
+                        # If any part has "pickupDisplay": "available", consider it in stock
                         if details.get("pickupDisplay") == "available":
                             if store_name:
                                 available_stores_for_model.append(store_name)
+                                # Found an available part in this store, no need to check other parts
+                                break
                 
                 current_stock[model] = sorted(list(set(available_stores_for_model)))
 
